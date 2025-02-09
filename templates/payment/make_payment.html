@@ -1,0 +1,28 @@
+<!-- course_reg_system/templates/payment/make_payment.html -->
+<form id="paymentForm" method="POST">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="number" name="amount" placeholder="Amount" required>
+    <button type="submit">Pay</button>
+</form>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+function payWithPaystack() {
+    var handler = PaystackPop.setup({
+        key: '{{ paystack_pub_key }}',
+        email: document.querySelector('input[name=email]').value,
+        amount: {{ amount_value }},
+        callback: function(response) {
+            window.location.href = '/payment/verify/' + response.reference;
+        },
+        onClose: function() {
+            alert('Transaction was not completed');
+        }
+    });
+}
+document.getElementById('paymentForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    payWithPaystack();
+});
+</script>
