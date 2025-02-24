@@ -1,0 +1,22 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="payment-success">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+        
+        <h2 class="text-center">Payment Successful!</h2>
+        <p class="text-center">Thank you for completing your registration.</p>
+        <p class="text-center">Your enrollment is now confirmed.</p>
+        
+        <div class="text-center mt-3">
+            <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

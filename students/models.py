@@ -1,30 +1,29 @@
 from django.db import models
-from courses.models import Course
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-class Student(models.Model):
-    student_id = models.CharField(primary_key=True, max_length=20)
-    student_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=100)
-    courses = models.ManyToManyField(Course, through='StudentRegistration', related_name='students')
-
+class Profile(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ]
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    payment_status = models.CharField(
+        max_length=10,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='pending',
+    )
+    tx_ref = models.CharField(max_length=50, blank=True, null=True)
+    
     def __str__(self):
-        return self.student_name
+        return f"{self.user.username}'s profile"
 
-class StudentRegistration(models.Model):
-    registration_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"Student {self.student.student_name} registered for {self.course.course_name}"
-
-
-
-class Deadline(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255)
-    due_date = models.DateField()
-
-    def __str__(self):
-        return self.name
+# Signal to create/update Profile when User is created/updated
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    else:
+        instance.profile.save() 
